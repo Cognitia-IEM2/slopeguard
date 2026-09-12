@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SlopeGuard | Landslide Early Warning</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #071426;
+
+            color: #e8f0fa;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* ==================================================
+           SIDEBAR
+        ================================================== */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 245px;
+
+            height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #0b1d34,
+                    #071426
+                );
+
+            border-right:
+                1px solid #1d3552;
+
+            padding: 25px 15px;
+
+            z-index: 1000;
+
+        }
+
+
+        .logo {
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+            color: #ffffff;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .logo-subtitle {
+
+            color: #6f91b8;
+
+            font-size: 11px;
+
+            margin-bottom: 35px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .nav-btn {
+
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            color: #9db2cc;
+
+            text-align: left;
+
+            padding: 14px 16px;
+
+            margin-bottom: 7px;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+        }
+
+
+        .nav-btn:hover {
+
+            background: #102a48;
+
+            color: white;
+
+        }
+
+
+        .nav-btn.active {
+
+            background: #2563eb;
+
+            color: white;
+
+        }
+
+
+        /* ==================================================
+           MAIN
+        ================================================== */
+
+        .main {
+
+            margin-left: 245px;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* ==================================================
+           HEADER
+        ================================================== */
+
+        .topbar {
+
+            height: 75px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 30px;
+
+            background: #091a30;
+
+            border-bottom:
+                1px solid #1d3552;
+
+        }
+
+
+        .topbar-title {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+        }
+
+
+        .topbar-description {
+
+            margin-left: 20px;
+
+            color: #6384aa;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==================================================
+           PAGE
+        ================================================== */
+
+        .page {
+
+            display: none;
+
+            padding: 30px;
+
+        }
+
+
+        .page.active {
+
+            display: block;
+
+        }
+
+
+        .page-title {
+
+            font-size: 28px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .page-description {
+
+            color: #8299b5;
+
+            margin-bottom: 25px;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==================================================
+           CARDS
+        ================================================== */
+
+        .cards {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .card {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #102742,
+                    #0b1c32
+                );
+
+            border:
+                1px solid #1d3858;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+        }
+
+
+        .card-title {
+
+            color: #7892ae;
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .card-value {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: white;
+
+        }
+
+
+        .card-small {
+
+            color: #718aa7;
+
+            font-size: 12px;
+
+            margin-top: 8px;
+
+        }
+
+
+        /* ==================================================
+           DASHBOARD GRID
+        ================================================== */
+
+        .dashboard-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                360px 1fr;
+
+            gap: 20px;
+
+        }
+
+
+        .panel {
+
+            background: #0b1c32;
+
+            border:
+                1px solid #1d3858;
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+        }
+
+
+        .panel-title {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        /* ==================================================
+           FORM
+        ================================================== */
+
+        .form-group {
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            color: #8ea5bf;
+
+            font-size: 12px;
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .form-group input {
+
+            width: 100%;
+
+            background: #071426;
+
+            border:
+                1px solid #294462;
+
+            color: white;
+
+            border-radius: 7px;
+
+            padding: 10px;
+
+            outline: none;
+
+        }
+
+
+        .form-group input:focus {
+
+            border-color: #3b82f6;
+
+        }
+
+
+        .form-row {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 10px;
+
+        }
+
+
+        .analyze-btn {
+
+            width: 100%;
+
+            margin-top: 8px;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .analyze-btn:hover {
+
+            background: #1d4ed8;
+
+        }
+
+
+        /* ==================================================
+           RISK STATUS
+        ================================================== */
+
+        .risk-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .risk-dot {
+
+            width: 15px;
+
+            height: 15px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+        }
+
+
+        .risk-dot.unstable {
+
+            background: #ef4444;
+
+        }
+
+
+        .risk-dot.marginal {
+
+            background: #f59e0b;
+
+        }
+
+
+        .risk-text {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           MAP
+        ================================================== */
+
+        .map-wrapper {
+
+            width: 100%;
+
+            height: 700px;
+
+            background: #071426;
+
+            border:
+                1px solid #1d3858;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+        }
+
+
+        .map-wrapper iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            display: block;
+
+        }
+
+
+        /* ==================================================
+           ALERTS
+        ================================================== */
+
+        .alerts-panel {
+
+            margin-top: 20px;
+
+        }
+
+
+        .alert {
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 10px;
+
+            background: #10243b;
+
+            border-left: 4px solid #22c55e;
+
+        }
+
+
+        .alert.unstable {
+
+            border-left-color: #ef4444;
+
+        }
+
+
+        .alert.marginal {
+
+            border-left-color: #f59e0b;
+
+        }
+
+
+        .alert-title {
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .alert-text {
+
+            color: #8ea5bf;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ==================================================
+           TABLE
+        ================================================== */
+
+        .table-container {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+
+        th {
+
+            text-align: left;
+
+            color: #7892ae;
+
+            font-size: 12px;
+
+            padding: 13px;
+
+            border-bottom:
+                1px solid #294462;
+
+        }
+
+
+        td {
+
+            padding: 13px;
+
+            border-bottom:
+                1px solid #172e49;
+
+            font-size: 13px;
+
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+        }
+
+
+        .badge.stable {
+
+            background: #123c2a;
+
+            color: #4ade80;
+
+        }
+
+
+        .badge.marginal {
+
+            background: #493718;
+
+            color: #fbbf24;
+
+        }
+
+
+        .badge.unstable {
+
+            background: #481d25;
+
+            color: #f87171;
+
+        }
+
+
+        /* ==================================================
+           WEATHER
+        ================================================== */
+
+        .weather-box {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+        }
+
+
+        .weather-item {
+
+            background: #10243b;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+        }
+
+
+        .weather-label {
+
+            color: #7892ae;
+
+            font-size: 12px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .weather-value {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           ABOUT / SETTINGS
+        ================================================== */
+
+        .info-box {
+
+            background: #0b1c32;
+
+            border:
+                1px solid #1d3858;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            line-height: 1.7;
+
+            color: #9bb0c8;
+
+        }
+
+
+        .info-box h3 {
+
+            color: white;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .info-box p {
+
+            margin-bottom: 18px;
+
+        }
+
+
+        /* ==================================================
+           ERROR
+        ================================================== */
+
+        .error {
+
+            background: #481d25;
+
+            border:
+                1px solid #7f2937;
+
+            color: #fca5a5;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 1000px) {
+
+            .cards {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+            .dashboard-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+
+                width: 190px;
+
+            }
+
+            .main {
+
+                margin-left: 190px;
+
+            }
+
+            .cards {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .weather-box {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .topbar-description {
+
+                display: none;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        SlopeGuard
+    </div>
+
+    <div class="logo-subtitle">
+        Physics-Based Slope Stability &
+        Live Rainfall Early Warning
+    </div>
+
+
+    <button
+        class="nav-btn active"
+        onclick="showPage('dashboard', this)">
+        Dashboard
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('map-page', this)">
+        Risk Map
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('rainfall', this)">
+        Rainfall
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('slope', this)">
+        Slope Stability
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('settings', this)">
+        Settings
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showPage('about', this)">
+        About
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main">
+
+
+    <!-- =================================================
+         TOP BAR
+    ================================================= -->
+
+    <div class="topbar">
+
+        <div class="topbar-title">
+            SlopeGuard
+        </div>
+
+        <div class="topbar-description">
+            Physics-Based Slope Stability &
+            Live Rainfall Early Warning
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         DASHBOARD
+    ================================================= -->
+
+    <section
+        id="dashboard"
+        class="page active">
+
+
+        <h1 class="page-title">
+            Highway Monitoring Dashboard
+        </h1>
+
+        <p class="page-description">
+            Monitor slope stability, rainfall,
+            pore pressure and landslide risk.
+        </p>
+
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <!-- RISK CARDS -->
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Overall Risk
+                </div>
+
+                <div class="card-value">
+                    {{ overall }}
+                </div>
+
+                <div class="card-small">
+                    Current route condition
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Unstable Segments
+                </div>
+
+                <div class="card-value">
+                    {{ unstable_count }}
+                </div>
+
+                <div class="card-small">
+                    Immediate attention
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Marginal Segments
+                </div>
+
+                <div class="card-value">
+                    {{ marginal_count }}
+                </div>
+
+                <div class="card-small">
+                    Requires monitoring
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Stable Segments
+                </div>
+
+                <div class="card-value">
+                    {{ stable_count }}
+                </div>
+
+                <div class="card-small">
+                    Currently stable
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- DASHBOARD CONTENT -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- ROUTE INPUT -->
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Highway Analysis
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="/">
+
+
+                    <div class="form-row">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Latitude
+                            </label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="start_lat"
+                                value="{{ values.start_lat }}"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Longitude
+                            </label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="start_lon"
+                                value="{{ values.start_lon }}"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-row">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Latitude
+                            </label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="end_lat"
+                                value="{{ values.end_lat }}"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Longitude
+                            </label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="end_lon"
+                                value="{{ values.end_lon }}"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Number of Segments
+                        </label>
+
+                        <input
+                            type="number"
+                            name="segments"
+                            min="5"
+                            max="30"
+                            value="{{ values.segments }}">
+
+                    </div>
+
+
+
+                    <div class="form-row">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Unstable FoS Cutoff
+                            </label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="unstable_cutoff"
+                                value="{{ values.unstable_cutoff }}">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Marginal FoS Cutoff
+                            </label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="marginal_cutoff"
+                                value="{{ values.marginal_cutoff }}">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="analyze-btn">
+
+                        Analyze Highway
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- HIGHEST RISK -->
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Highest Risk Segment
+                </div>
+
+
+                <div class="risk-status">
+
+                    <div class="risk-dot
+                        {% if highest_risk.classification == 'UNSTABLE' %}
+                            unstable
+                        {% elif highest_risk.classification == 'MARGINAL' %}
+                            marginal
+                        {% endif %}
+                    ">
+                    </div>
+
+
+                    <div class="risk-text">
+
+                        {{ highest_risk.segment }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="cards"
+                     style="
+                        grid-template-columns:
+                        repeat(2,1fr);
+                        margin-bottom:0;
+                     ">
+
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Risk Score
+                        </div>
+
+                        <div class="card-value">
+                            {{ highest_risk.risk_score }}/100
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Factor of Safety
+                        </div>
+
+                        <div class="card-value">
+                            {{ highest_risk.fos }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Slope
+                        </div>
+
+                        <div class="card-value">
+                            {{ highest_risk.slope_deg }}°
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Rainfall
+                        </div>
+
+                        <div class="card-value">
+                            {{ highest_risk.rainfall_mm }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             ALERTS UNDER DASHBOARD
+        ================================================= -->
+
+        <div class="panel alerts-panel">
+
+            <div class="panel-title">
+                Alerts
+            </div>
+
+
+            {% if unstable_count > 0 %}
+
+            <div class="alert unstable">
+
+                <div class="alert-title">
+                    ⚠️ Unstable Segment Detected
+                </div>
+
+                <div class="alert-text">
+
+                    {{ unstable_count }}
+                    monitored segment(s) have a
+                    Factor of Safety below the
+                    unstable threshold.
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if marginal_count > 0 %}
+
+            <div class="alert marginal">
+
+                <div class="alert-title">
+                    ⚠️ Marginal Stability
+                </div>
+
+                <div class="alert-text">
+
+                    {{ marginal_count }}
+                    segment(s) require additional
+                    monitoring.
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if unstable_count == 0 and marginal_count == 0 %}
+
+            <div class="alert">
+
+                <div class="alert-title">
+                    ✓ No Critical Alerts
+                </div>
+
+                <div class="alert-text">
+
+                    All currently monitored
+                    segments are classified as
+                    stable.
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- =================================================
+             SEGMENT TABLE
+        ================================================= -->
+
+        <div class="panel"
+             style="margin-top:20px;">
+
+            <div class="panel-title">
+                Monitored Segments
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Segment
+                            </th>
+
+                            <th>
+                                Risk
+                            </th>
+
+                            <th>
+                                Score
+                            </th>
+
+                            <th>
+                                FoS
+                            </th>
+
+                            <th>
+                                Slope
+                            </th>
+
+                            <th>
+                                Rainfall
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for r in results %}
+
+                        <tr>
+
+                            <td>
+                                {{ r.segment }}
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="badge
+                                    {% if r.classification == 'UNSTABLE' %}
+                                        unstable
+                                    {% elif r.classification == 'MARGINAL' %}
+                                        marginal
+                                    {% else %}
+                                        stable
+                                    {% endif %}
+                                    ">
+
+                                    {{ r.classification }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                {{ r.risk_score }}/100
+                            </td>
+
+
+                            <td>
+                                {{ r.fos }}
+                            </td>
+
+
+                            <td>
+                                {{ r.slope_deg }}°
+                            </td>
+
+
+                            <td>
+                                {{ r.rainfall_mm }} mm
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         RISK MAP
+    ================================================= -->
+
+    <section
+        id="map-page"
+        class="page">
+
+
+        <h1 class="page-title">
+            Risk Map
+        </h1>
+
+
+        <p class="page-description">
+
+            Interactive landslide-risk monitoring
+            across the selected highway route.
+            Click anywhere on the map to inspect
+            a location.
+
+        </p>
+
+
+        <div class="map-wrapper">
+
+            <iframe
+                src="{{ url_for('risk_map_page') }}"
+                title="SlopeGuard Interactive Risk Map"
+                loading="eager">
+            </iframe>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         RAINFALL
+    ================================================= -->
+
+    <section
+        id="rainfall"
+        class="page">
+
+
+        <h1 class="page-title">
+            Live Rainfall
+        </h1>
+
+
+        <p class="page-description">
+            Current rainfall information from
+            Open-Meteo.
+        </p>
+
+
+        <div class="weather-box">
+
+
+            <div class="weather-item">
+
+                <div class="weather-label">
+                    Rainfall
+                </div>
+
+                <div class="weather-value">
+
+                    {{ weather.rainfall_mm }}
+                    mm
+
+                </div>
+
+            </div>
+
+
+            <div class="weather-item">
+
+                <div class="weather-label">
+                    Precipitation
+                </div>
+
+                <div class="weather-value">
+
+                    {{ weather.precipitation_mm }}
+                    mm
+
+                </div>
+
+            </div>
+
+
+            <div class="weather-item">
+
+                <div class="weather-label">
+                    Temperature
+                </div>
+
+                <div class="weather-value">
+
+                    {% if weather.temperature is not none %}
+
+                        {{ weather.temperature }}°C
+
+                    {% else %}
+
+                        N/A
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel"
+             style="margin-top:20px;">
+
+            <div class="panel-title">
+                Data Source
+            </div>
+
+            <p style="color:#8ea5bf;">
+
+                {{ weather.description }}
+
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         SLOPE STABILITY
+    ================================================= -->
+
+    <section
+        id="slope"
+        class="page">
+
+
+        <h1 class="page-title">
+            Slope Stability
+        </h1>
+
+
+        <p class="page-description">
+            Physics-based infinite-slope
+            stability screening.
+        </p>
+
+
+        <div class="panel">
+
+            <div class="panel-title">
+                Stability Analysis
+            </div>
+
+
+            <p style="
+                color:#9bb0c8;
+                line-height:1.7;
+            ">
+
+                SlopeGuard estimates the Factor of
+                Safety using slope angle, soil
+                cohesion, friction angle, unit
+                weight, soil depth and rainfall-
+                induced pore pressure.
+
+            </p>
+
+
+            <br>
+
+
+            <p style="
+                color:#9bb0c8;
+                line-height:1.7;
+            ">
+
+                A lower Factor of Safety indicates
+                reduced slope stability. Rainfall
+                increases pore-water pressure,
+                reducing effective normal stress
+                and potentially lowering the
+                Factor of Safety.
+
+            </p>
+
+        </div>
+
+
+        <div class="panel"
+             style="margin-top:20px;">
+
+            <div class="panel-title">
+                Risk Classification
+            </div>
+
+
+            <div class="alert unstable">
+
+                <div class="alert-title">
+                    UNSTABLE
+                </div>
+
+                <div class="alert-text">
+                    Factor of Safety below the
+                    configured unstable threshold.
+                </div>
+
+            </div>
+
+
+            <div class="alert marginal">
+
+                <div class="alert-title">
+                    MARGINAL
+                </div>
+
+                <div class="alert-text">
+                    Factor of Safety is between
+                    the unstable and marginal
+                    thresholds.
+                </div>
+
+            </div>
+
+
+            <div class="alert">
+
+                <div class="alert-title">
+                    STABLE
+                </div>
+
+                <div class="alert-text">
+                    Factor of Safety is above the
+                    configured marginal threshold.
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         SETTINGS
+    ================================================= -->
+
+    <section
+        id="settings"
+        class="page">
+
+
+        <h1 class="page-title">
+            Settings
+        </h1>
+
+
+        <p class="page-description">
+            Current monitoring configuration.
+        </p>
+
+
+        <div class="info-box">
+
+            <h3>
+                Risk Thresholds
+            </h3>
+
+            <p>
+
+                Unstable threshold:
+                <strong>
+                    {{ values.unstable_cutoff }}
+                </strong>
+
+                <br>
+
+                Marginal threshold:
+                <strong>
+                    {{ values.marginal_cutoff }}
+                </strong>
+
+            </p>
+
+
+            <h3>
+                Monitoring Segments
+            </h3>
+
+            <p>
+
+                Current route is divided into
+                <strong>
+                    {{ values.segments }}
+                </strong>
+                monitored segments.
+
+            </p>
+
+
+            <h3>
+                Rainfall Source
+            </h3>
+
+            <p>
+
+                Open-Meteo live weather data.
+
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         ABOUT
+    ================================================= -->
+
+    <section
+        id="about"
+        class="page">
+
+
+        <h1 class="page-title">
+            About SlopeGuard
+        </h1>
+
+
+        <p class="page-description">
+            Physics-based highway landslide
+            early warning system.
+        </p>
+
+
+        <div class="info-box">
+
+
+            <h3>
+                What is SlopeGuard?
+            </h3>
+
+            <p>
+
+                SlopeGuard is a highway slope
+                monitoring and early warning
+                system designed to identify
+                potentially unstable slope
+                segments using physics-based
+                stability calculations and
+                live rainfall information.
+
+            </p>
+
+
+            <h3>
+                Event → Propagation → Impact → Risk
+            </h3>
+
+            <p>
+
+                The system combines terrain,
+                geotechnical properties, rainfall
+                and pore-pressure effects to
+                estimate slope stability and
+                prioritize potentially hazardous
+                highway segments.
+
+            </p>
+
+
+            <h3>
+                Important Limitation
+            </h3>
+
+            <p>
+
+                The current prototype uses
+                modeled terrain and soil parameters
+                for demonstration. Real nationwide
+                risk assessment would require
+                validated DEM, soil, geological,
+                road-network and historical
+                landslide datasets.
+
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+function showPage(pageId, button) {
+
+
+    // Hide every page
+
+    const pages =
+        document.querySelectorAll(".page");
+
+
+    pages.forEach(function(page) {
+
+        page.classList.remove("active");
+
+    });
+
+
+    // Remove active state from buttons
+
+    const buttons =
+        document.querySelectorAll(".nav-btn");
+
+
+    buttons.forEach(function(btn) {
+
+        btn.classList.remove("active");
+
+    });
+
+
+    // Show selected page
+
+    const selectedPage =
+        document.getElementById(pageId);
+
+
+    if (selectedPage) {
+
+        selectedPage.classList.add("active");
+
+    }
+
+
+    // Activate selected button
+
+    if (button) {
+
+        button.classList.add("active");
+
+    }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
