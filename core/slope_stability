@@ -1,0 +1,72 @@
+import math
+
+
+def calculate_fos(
+    slope_deg,
+    cohesion_kpa,
+    friction_angle_deg,
+    unit_weight_kn_m3,
+    soil_depth_m,
+    pore_pressure_kpa=0.0
+):
+    """
+    Infinite-slope Factor of Safety calculation.
+    """
+
+    beta = math.radians(
+        slope_deg
+    )
+
+    phi = math.radians(
+        friction_angle_deg
+    )
+
+
+    # Normal stress
+    normal_stress = (
+        unit_weight_kn_m3
+        * soil_depth_m
+        * math.cos(beta) ** 2
+    )
+
+
+    # Driving stress
+    driving_stress = (
+        unit_weight_kn_m3
+        * soil_depth_m
+        * math.sin(beta)
+        * math.cos(beta)
+    )
+
+
+    # Effective normal stress
+    effective_normal_stress = max(
+        normal_stress
+        - pore_pressure_kpa,
+        0.001
+    )
+
+
+    # Shear strength
+    shear_strength = (
+        cohesion_kpa
+        + effective_normal_stress
+        * math.tan(phi)
+    )
+
+
+    # Factor of Safety
+    if driving_stress <= 0:
+        return 99.0
+
+
+    fos = (
+        shear_strength
+        / driving_stress
+    )
+
+
+    return round(
+        fos,
+        3
+    )
