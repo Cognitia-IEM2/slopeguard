@@ -1,0 +1,80 @@
+def calculate_pore_pressure(
+    rainfall_mm,
+    soil_depth_m,
+    infiltration_factor=0.35,
+    saturation_limit=0.90
+):
+    """
+    Estimates rainfall-induced pore-water pressure.
+
+    This is a screening-level approximation.
+    """
+
+    rainfall_mm = max(
+        0.0,
+        float(rainfall_mm)
+    )
+
+    soil_depth_m = max(
+        0.1,
+        float(soil_depth_m)
+    )
+
+
+    # Convert rainfall from mm to metres
+    rainfall_m = (
+        rainfall_mm / 1000.0
+    )
+
+
+    # Estimated infiltration
+    infiltrated_water_m = (
+        rainfall_m
+        * infiltration_factor
+    )
+
+
+    # Saturation ratio
+    saturation_ratio = min(
+        infiltrated_water_m
+        / soil_depth_m,
+
+        saturation_limit
+    )
+
+
+    # Unit weight of water
+    gamma_water = 9.81
+
+
+    # Pore-water pressure
+    pore_pressure_kpa = (
+        gamma_water
+        * soil_depth_m
+        * saturation_ratio
+    )
+
+
+    return {
+
+        "rainfall_mm":
+            round(rainfall_mm, 2),
+
+        "infiltrated_water_m":
+            round(
+                infiltrated_water_m,
+                5
+            ),
+
+        "saturation_ratio":
+            round(
+                saturation_ratio,
+                3
+            ),
+
+        "pore_pressure_kpa":
+            round(
+                pore_pressure_kpa,
+                3
+            )
+    }
